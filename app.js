@@ -1,20 +1,80 @@
 // Declare Variables
+const mainContainer = document.querySelector('.main-container');
 const qwertyDiv = document.querySelector('#qwerty');
 const phraseDiv = document.querySelector('#phrase');
+const ul = phraseDiv.querySelector('ul');
 const scoreBoard = document.querySelector('#scoreboard ol');
 const overlay = document.querySelector('#overlay');
 const title = overlay.querySelector('.title');
 const startBtn = overlay.querySelector('.btn__reset');
-const phrases = ['I am John', 'I like cake', 'Cake is sweet', 'I ate cake', 'I am full'];
+const phrases = ['I am John', 'I like cake', 'Cake is sweet', 'I ate cake', 'I feel happy'];
 let missed = 0;
+
+// Create a button that will get a new phrase
+const resetBtn = document.createElement('button');
+resetBtn.innerHTML = 'Get a new phrase!';
+resetBtn.style.backgroundColor = 'var(--color-start)';
+resetBtn.style.color = '#FFF';
+mainContainer.appendChild(resetBtn);
 
 // Add a click event listener to startBtn
 startBtn.addEventListener('click', () => {
   if (startBtn.innerHTML === 'Start Game') {
     // Change the overlay display to none
     overlay.style.display = 'none';
+    newPhrase()
+  } else if (startBtn.innerHTML === 'Reset Game') {
+    // Change the overlay display to none
+    overlay.style.display = 'none';
+    resetGame();
+    resetButton();
+    resetScore();
   }
 });
+
+// add Event listener to the resetBtn
+resetBtn.addEventListener('click', () => {
+  resetGame();
+  resetButton();
+  resetScore();
+});
+
+// Reset the keyboard
+function resetButton() {
+  const chosenBtn = qwertyDiv.querySelectorAll('.chosen');
+  for (let i = 0; i < chosenBtn.length; i++) {
+    chosenBtn[i].className = '';
+    chosenBtn[i].disabled = false;
+  }
+}
+
+// Reset the score
+function resetScore() {
+  const lifeLeft = scoreBoard.querySelectorAll('li.tries');
+
+  if (lifeLeft.length < 5) {
+    for (let i = 0; i <= (4 - lifeLeft.length) ; i++) {
+      const life = document.createElement('li');
+      life.className = 'tries';
+      life.innerHTML= '<img src="images/liveHeart.png" height="35px" width="30px">';
+      scoreBoard.appendChild(life);
+    }
+  }
+}
+
+function resetGame() {
+  // Remove the last phrase
+  while (ul.hasChildNodes()) {
+    ul.removeChild(ul.lastChild);
+  }
+  newPhrase()
+}
+
+function newPhrase() {
+  // Generate a random phrase from the phrases array then display it
+  const randomPhrase = getRandomPhraseAsArray(phrases);
+  addPhraseToDisplay(randomPhrase);
+}
 
 // Get a random phrase function
 function getRandomPhraseAsArray(array) {
@@ -35,7 +95,7 @@ function addPhraseToDisplay (arr) {
     // Assign a letter to the LI tag
     listItem.innerHTML = arr[i];
     // Append listItem to the UL inside #phrase DIV
-    document.querySelector('#phrase ul').appendChild(listItem);
+    ul.appendChild(listItem);
     // Check if the listItem contain a letter or a space character
     if (listItem.innerHTML !== ' ') {
       // Add 'letter' class name to LI tag contain letter
@@ -92,10 +152,6 @@ function checkWin() {
     changeOverlay('you won the game', 'win');
   }
 }
-
-// Generate a random phrase from the phrases array then display it
-const randomPhrase = getRandomPhraseAsArray(phrases);
-addPhraseToDisplay(randomPhrase);
 
 // Add an event listener to the keyboard button
 qwertyDiv.addEventListener('click', (e) => {
